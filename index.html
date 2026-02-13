@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dila X Hosting | Premium V2Ray & VPN Hosting</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Config for Custom Colors/Fonts -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#050505',
+                            card: '#0f172a',
+                            accent: '#00f2ff', // Neon Cyan
+                            accent2: '#0066ff', // Deep Blue
+                            purple: '#bd00ff'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles & Utilities */
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 242, 255, 0.5);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.15);
+            transform: translateY(-10px);
+        }
+
+        /* Neon Glow Text */
+        .text-glow {
+            text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(to right, #00f2ff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Loader */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: #00f2ff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Particle Canvas */
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        /* Scroll Reveal Class */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f2ff;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-accent selection:text-black">
+
+    <!-- Loading Animation -->
+    <div id="loader">
+        <div class="flex flex-col items-center gap-4">
+            <div class="spinner"></div>
+            <div class="text-brand-accent font-bold tracking-widest animate-pulse">DILA X HOSTING</div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass border-b border-white/5 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <span class="text-2xl font-bold tracking-tighter">
+                        <span class="text-white">DILA</span> <span class="text-brand-accent text-glow">X</span>
+                    </span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#home" class="hover:text-brand-accent transition-colors px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="#plans" class="hover:text-brand-accent transition-colors px-3 py-2 rounded-md text-sm font-medium">Plans</a>
+                        <a href="#features" class="hover:text-brand-accent transition-colors px-3 py-2 rounded-md text-sm font-medium">Features</a>
+                        <a href="#locations" class="hover:text-brand-accent transition-colors px-3 py-2 rounded-md text-sm font-medium">Locations</a>
+                        <a href="#contact" class="hover:text-brand-accent transition-colors px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                    </div>
+                </div>
+
+                <!-- Login Button -->
+                <div class="hidden md:block">
+                    <button class="bg-gradient-to-r from-brand-accent2 to-brand-accent text-white px-6 py-2 rounded-full font-semibold hover:shadow-[0_0_20px_rgba(0,242,255,0.4)] transition-all duration-300 transform hover:scale-105">
+                        Login
+                    </button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button id="mobile-menu-btn" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-white/10 focus:outline-none">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-brand-card border-b border-white/10" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#home" class="text-gray-300 hover:text-brand-accent block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="#plans" class="text-gray-300 hover:text-brand-accent block px-3 py-2 rounded-md text-base font-medium">Plans</a>
+                <a href="#features" class="text-gray-300 hover:text-brand-accent block px-3 py-2 rounded-md text-base font-medium">Features</a>
+                <a href="#contact" class="text-gray-300 hover:text-brand-accent block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+                <button class="w-full text-left bg-brand-accent/10 text-brand-accent border border-brand-accent/50 px-3 py-2 rounded-md text-base font-medium mt-4">Login</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative h-screen flex items-center justify-center overflow-hidden">
+        <!-- Background Canvas for Particles -->
+        <div id="canvas-container">
+            <canvas id="hero-canvas"></canvas>
+        </div>
+        
+        <!-- Overlay Gradient -->
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-brand-dark/50 to-brand-dark pointer-events-none"></div>
+
+        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
+            <div class="inline-block mb-4 px-4 py-1 rounded-full border border-brand-accent/30 bg-brand-accent/5 backdrop-blur-sm animate-float">
+                <span class="text-brand-accent text-sm font-semibold tracking-wide uppercase">Next Gen V2Ray Hosting</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight reveal active">
+                Fast & Secure <br>
+                <span class="text-gradient">V2Ray / VPN</span> Hosting
+            </h1>
+            
+            <p class="text-gray-400 text-lg md:text-xl mb-10 max-w-2xl mx-auto reveal active" style="transition-delay: 100ms;">
+                Experience the internet without borders. High-speed servers, 99.9% uptime guarantee, and military-grade encryption across global locations.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center reveal active" style="transition-delay: 200ms;">
+                <a href="#plans" class="group relative px-8 py-4 bg-white text-black font-bold rounded-full overflow-hidden transition-all hover:scale-105">
+                    <div class="absolute inset-0 w-full h-full bg-brand-accent opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                    Get Started
+                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+                <a href="#features" class="px-8 py-4 glass text-white font-bold rounded-full hover:bg-white/10 transition-all border border-white/20 hover:border-brand-accent/50">
+                    View Plans
+                </a>
+            </div>
+
+            <!-- Stats -->
+            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/10 pt-8 reveal" style="transition-delay: 300ms;">
+                <div>
+                    <div class="text-3xl font-bold text-white">99.9%</div>
+                    <div class="text-sm text-gray-500">Uptime</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-white">10Gbps</div>
+                    <div class="text-sm text-gray-500">Network Speed</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-white">24/7</div>
+                    <div class="text-sm text-gray-500">Support</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-white">15+</div>
+                    <div class="text-sm text-gray-500">Locations</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Plans Section -->
+    <section id="plans" class="py-24 bg-brand-dark relative">
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-accent/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-brand-purple/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-brand-accent font-semibold tracking-wide uppercase text-sm mb-2">Pricing</h2>
+                <h3 class="text-4xl md:text-5xl font-bold text-white mb-4">Choose Your Plan</h3>
+                <p class="text-gray-400 max-w-2xl mx-auto">Flexible pricing for individuals and businesses. All plans include instant activation.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Basic Plan -->
+                <div class="glass-card rounded-2xl p-8 relative group reveal">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Basic</div>
+                    <h4 class="text-xl font-semibold text-white mb-2">Starter</h4>
+                    <div class="flex items-baseline mb-6">
+                        <span class="text-4xl font-bold text-white">$5</span>
+                        <span class="text-gray-500 ml-2">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> High Speed Servers</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> 100GB Bandwidth</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> 24/7 Support</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> DDoS Protection</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> 1 Server Location</li>
+                    </ul>
+                    <button class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-black transition-all font-semibold">Select Plan</button>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="glass-card rounded-2xl p-8 relative group border-brand-accent/50 transform md:-translate-y-4 reveal" style="transition-delay: 100ms;">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-brand-accent text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-[0_0_15px_rgba(0,242,255,0.5)]">Popular</div>
+                    <div class="absolute inset-0 bg-brand-accent/5 rounded-2xl blur-xl -z-10"></div>
+                    <h4 class="text-xl font-semibold text-white mb-2">Pro</h4>
+                    <div class="flex items-baseline mb-6">
+                        <span class="text-4xl font-bold text-white">$10</span>
+                        <span class="text-gray-500 ml-2">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> Ultra High Speed</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> Unlimited Bandwidth</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> Priority Support</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> Advanced DDoS Protection</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> 3 Server Locations</li>
+                    </ul>
+                    <button class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-accent2 to-brand-accent text-white font-bold hover:shadow-[0_0_20px_rgba(0,242,255,0.4)] transition-all transform hover:scale-105">Select Plan</button>
+                </div>
+
+                <!-- Premium Plan -->
+                <div class="glass-card rounded-2xl p-8 relative group reveal" style="transition-delay: 200ms;">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Best Value</div>
+                    <h4 class="text-xl font-semibold text-white mb-2">Premium</h4>
+                    <div class="flex items-baseline mb-6">
+                        <span class="text-4xl font-bold text-white">$20</span>
+                        <span class="text-gray-500 ml-2">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> Dedicated Resources</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> Unlimited Bandwidth</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> VIP Support</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> Enterprise Security</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-brand-accent mr-3"></i> All Global Locations</li>
+                    </ul>
+                    <button class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-black transition-all font-semibold">Select Plan</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 bg-[#080c14]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-brand-accent font-semibold tracking-wide uppercase text-sm mb-2">Why Choose Us</h2>
+                <h3 class="text-4xl md:text-5xl font-bold text-white">Premium Features</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-accent/30 transition-all group reveal">
+                    <div class="w-14 h-14 rounded-xl bg-brand-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-bolt text-2xl text-brand-accent"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">High Speed</h4>
+                    <p class="text-gray-400">Optimized 10Gbps network infrastructure ensuring low latency and blazing fast speeds for streaming and browsing.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-accent/30 transition-all group reveal" style="transition-delay: 100ms;">
+                    <div class="w-14 h-14 rounded-xl bg-brand-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-shield-alt text-2xl text-brand-accent"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">Secure Encryption</h4>
+                    <p class="text-gray-400">Military-grade AES-256 encryption protocols to keep your data safe from prying eyes and hackers.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-accent/30 transition-all group reveal" style="transition-delay: 200ms;">
+                    <div class="w-14 h-14 rounded-xl bg-brand-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-globe-americas text-2xl text-brand-accent"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">Global Locations</h4>
+                    <p class="text-gray-400">Strategically placed servers in Asia, Europe, and America to provide the best connection wherever you are.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-accent/30 transition-all group reveal">
+                    <div class="w-14 h-14 rounded-xl bg-brand-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-mobile-alt text-2xl text-brand-accent"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">Easy Setup</h4>
+                    <p class="text-gray-400">One-click configuration files and detailed guides for Windows, macOS, iOS, and Android devices.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-accent/30 transition-all group reveal" style="transition-delay: 100ms;">
+                    <div class="w-14 h-14 rounded-xl bg-brand-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-headset text-2xl text-brand-accent"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">24/7 Support</h4>
+                    <p class="text-gray-400">Our expert technical team is available around the clock via Telegram and WhatsApp to assist you.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="p-8 rounded-2xl bg-white/5 border border-white/5 hover:border-brand-accent/30 transition-all group reveal" style="transition-delay: 200ms;">
+                    <div class="w-14 h-14 rounded-xl bg-brand-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-infinity text-2xl text-brand-accent"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">No Logs Policy</h4>
+                    <p class="text-gray-400">We strictly enforce a zero-logs policy. Your online activities are never monitored, tracked, or stored.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Server Locations Section -->
+    <section id="locations" class="py-24 bg-brand-dark relative overflow-hidden">
+        <!-- Decorative Elements -->
+        <div class="absolute right-0 top-1/2 w-1/2 h-full bg-gradient-to-l from-brand-accent/5 to-transparent pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <div class="lg:w-1/2 reveal">
+                    <h2 class="text-brand-accent font-semibold tracking-wide uppercase text-sm mb-2">Global Network</h2>
+                    <h3 class="text-4xl md:text-5xl font-bold text-white mb-6">Strategic Server Locations</h3>
+                    <p class="text-gray-400 mb-8 text-lg">Our servers are hosted in Tier-3 and Tier-4 data centers to ensure maximum reliability and speed.</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex items-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-brand-accent/50 transition-all cursor-default group">
+                            <span class="text-3xl mr-4 group-hover:scale-125 transition-transform">🇸🇬</span>
+                            <div>
+                                <h5 class="font-bold text-white">Singapore</h5>
+                                <p class="text-xs text-brand-accent">Lowest Latency</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-brand-accent/50 transition-all cursor-default group">
+                            <span class="text-3xl mr-4 group-hover:scale-125 transition-transform">🇯🇵</span>
+                            <div>
+                                <h5 class="font-bold text-white">Japan</h5>
+                                <p class="text-xs text-gray-500">Tokyo DC</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-brand-accent/50 transition-all cursor-default group">
+                            <span class="text-3xl mr-4 group-hover:scale-125 transition-transform">🇺🇸</span>
+                            <div>
+                                <h5 class="font-bold text-white">USA</h5>
+                                <p class="text-xs text-gray-500">West Coast</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-brand-accent/50 transition-all cursor-default group">
+                            <span class="text-3xl mr-4 group-hover:scale-125 transition-transform">🇩🇪</span>
+                            <div>
+                                <h5 class="font-bold text-white">Germany</h5>
+                                <p class="text-xs text-gray-500">Frankfurt</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="lg:w-1/2 reveal">
+                    <!-- Abstract Map Visualization -->
+                    <div class="relative w-full aspect-square max-w-md mx-auto">
+                        <div class="absolute inset-0 bg-brand-accent/20 rounded-full blur-3xl animate-pulse-slow"></div>
+                        <div class="relative w-full h-full rounded-full border border-white/10 bg-white/5 backdrop-blur-sm flex items-center justify-center">
+                            <div class="absolute w-full h-full rounded-full border border-dashed border-white/20 animate-[spin_20s_linear_infinite]"></div>
+                            <div class="absolute w-3/4 h-3/4 rounded-full border border-dashed border-brand-accent/30 animate-[spin_15s_linear_infinite_reverse]"></div>
+                            
+                            <!-- Nodes -->
+                            <div class="absolute top-1/4 left-1/4 w-4 h-4 bg-brand-accent rounded-full shadow-[0_0_15px_#00f2ff]"></div>
+                            <div class="absolute bottom-1/3 right-1/4 w-4 h-4 bg-brand-accent rounded-full shadow-[0_0_15px_#00f2ff]"></div>
+                            <div class="absolute top-1/2 right-10 w-4 h-4 bg-brand-accent rounded-full shadow-[0_0_15px_#00f2ff]"></div>
+                            <div class="absolute bottom-10 left-1/3 w-4 h-4 bg-brand-accent rounded-full shadow-[0_0_15px_#00f2ff]"></div>
+                            
+                            <div class="text-center z-10">
+                                <i class="fas fa-server text-6xl text-white mb-2"></i>
+                                <p class="text-brand-accent font-bold">Global Network</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-[#080c14]">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 reveal">
+                <h2 class="text-brand-accent font-semibold tracking-wide uppercase text-sm mb-2">Get In Touch</h2>
+                <h3 class="text-4xl font-bold text-white">Contact Us</h3>
+            </div>
+
+            <div class="glass-card p-8 md:p-10 rounded-2xl reveal">
+                <form id="contactForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Name</label>
+                            <input type="text" id="name" class="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors" placeholder="John Doe">
+                            <p class="text-red-500 text-xs mt-1 hidden" id="nameError">Name is required</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Email</label>
+                            <input type="email" id="email" class="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors" placeholder="john@example.com">
+                            <p class="text-red-500 text-xs mt-1 hidden" id="emailError">Valid email is required</p>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Message</label>
+                        <textarea id="message" rows="4" class="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-colors" placeholder="How can we help you?"></textarea>
+                        <p class="text-red-500 text-xs mt-1 hidden" id="messageError">Message cannot be empty</p>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-gradient-to-r from-brand-accent2 to-brand-accent text-white font-bold py-4 rounded-lg hover:shadow-[0_0_20px_rgba(0,242,255,0.4)] transition-all transform hover:scale-[1.02]">
+                        Send Message
+                    </button>
+                </form>
+
+                <div class="mt-8 pt-8 border-t border-white/10 flex justify-center gap-6">
+                    <a href="#" class="flex items-center gap-2 text-gray-400 hover:text-green-500 transition-colors">
+                        <i class="fab fa-whatsapp text-2xl"></i>
+                        <span class="hidden sm:inline">WhatsApp</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors">
+                        <i class="fab fa-telegram text-2xl"></i>
+                        <span class="hidden sm:inline">Telegram</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-white/10 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-1">
+                    <span class="text-2xl font-bold tracking-tighter mb-4 block">
+                        <span class="text-white">DILA</span> <span class="text-brand-accent">X</span>
+                    </span>
+                    <p class="text-gray-500 text-sm">Premium V2Ray and VPN hosting solutions for a secure and open internet.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#home" class="hover:text-brand-accent transition-colors">Home</a></li>
+                        <li><a href="#plans" class="hover:text-brand-accent transition-colors">Plans</a></li>
+                        <li><a href="#features" class="hover:text-brand-accent transition-colors">Features</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-brand-accent transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-brand-accent transition-colors">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-brand-accent hover:text-black transition-all">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-brand-accent hover:text-black transition-all">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-brand-accent hover:text-black transition-all">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white/10 pt-8 text-center text-gray-600 text-sm">
+                <p>&copy; 2026 Dila X Hosting. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // 1. Page Loader
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+        });
+
+        // 2. Mobile Menu Toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when clicking a link
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                menu.classList.add('hidden');
+            });
+        });
+
+        // 3. Scroll Reveal Animation
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealOnScroll = () => {
+            const windowHeight = window.innerHeight;
+            const elementVisible = 100;
+
+            revealElements.forEach((reveal) => {
+                const elementTop = reveal.getBoundingClientRect().top;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveal.classList.add('active');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        // Trigger once on load
+        revealOnScroll();
+
+        // 4. Navbar Glass Effect on Scroll
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-lg');
+                navbar.style.background = 'rgba(5, 5, 5, 0.9)';
+            } else {
+                navbar.classList.remove('shadow-lg');
+                navbar.style.background = 'rgba(15, 23, 42, 0.6)';
+            }
+        });
+
+        // 5. Particle Canvas Animation
+        const canvas = document.getElementById('hero-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        // Configuration
+        const particleCount = 60;
+        const connectionDistance = 150;
+        const mouseDistance = 200;
+
+        let mouse = { x: null, y: null };
+
+        window.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+
+        window.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight; // Full height of section
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+                this.color = `rgba(0, 242, 255, ${Math.random() * 0.5})`;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce off edges
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                // Mouse interaction
+                if (mouse.x != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx*dx + dy*dy);
+                    if (distance < mouseDistance) {
+                        const forceDirectionX = dx / distance;
+                        const forceDirectionY = dy / distance;
+                        const force = (mouseDistance - distance) / mouseDistance;
+                        const directionX = forceDirectionX * force * 0.6;
+                        const directionY = forceDirectionY * force * 0.6;
+                        this.vx -= directionX;
+                        this.vy -= directionY;
+                    }
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                // Draw connections
+                for (let j = i; j < particles.length; j++) {
+                    let dx = particles[i].x - particles[j].x;
+                    let dy = particles[i].y - particles[j].y;
+                    let distance = Math.sqrt(dx*dx + dy*dy);
+
+                    if (distance < connectionDistance) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 242, 255, ${1 - distance/connectionDistance})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('resize', () => {
+            resize();
+            initParticles();
+        });
+
+        resize();
+        initParticles();
+        animateParticles();
+
+        // 6. Form Validation
+        const form = document.getElementById('contactForm');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const messageInput = document.getElementById('message');
+
+        const showError = (input, msgId) => {
+            document.getElementById(msgId).classList.remove('hidden');
+            input.classList.add('border-red-500');
+        };
+
+        const clearError = (input, msgId) => {
+            document.getElementById(msgId).classList.add('hidden');
+            input.classList.remove('border-red-500');
+        };
+
+        const isValidEmail = (email) => {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        };
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let isValid = true;
+
+            // Validate Name
+            if (nameInput.value.trim() === '') {
+                showError(nameInput, 'nameError');
+                isValid = false;
+            } else {
+                clearError(nameInput, 'nameError');
+            }
+
+            // Validate Email
+            if (!isValidEmail(emailInput.value.trim())) {
+                showError(emailInput, 'emailError');
+                isValid = false;
+            } else {
+                clearError(emailInput, 'emailError');
+            }
+
+            // Validate Message
+            if (messageInput.value.trim() === '') {
+                showError(messageInput, 'messageError');
+                isValid = false;
+            } else {
+                clearError(messageInput, 'messageError');
+            }
+
+            if (isValid) {
+                // Simulate form submission
+                const btn = form.querySelector('button');
+                const originalText = btn.innerText;
+                btn.innerText = 'Sending...';
+                btn.disabled = true;
+                btn.classList.add('opacity-75');
+
+                setTimeout(() => {
+                    btn.innerText = 'Message Sent!';
+                    btn.classList.remove('from-brand-accent2', 'to-brand-accent');
+                    btn.classList.add('bg-green-500');
+                    form.reset();
+                    
+                    setTimeout(() => {
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-75', 'bg-green-500');
+                        btn.classList.add('from-brand-accent2', 'to-brand-accent');
+                    }, 3000);
+                }, 1500);
+            }
+        });
+
+        // Clear errors on input
+        [nameInput, emailInput, messageInput].forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('border-red-500');
+                this.nextElementSibling.classList.add('hidden');
+            });
+        });
+
+    </script>
+</body>
+</html>
